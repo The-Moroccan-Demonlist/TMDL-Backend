@@ -1,0 +1,7 @@
+package ma.apostorial.tmdl_backend.common.exceptions;
+
+public class NoContentException extends RuntimeException {
+    public NoContentException(String message) {
+        super(message);
+    }
+}
