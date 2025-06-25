@@ -62,7 +62,7 @@ public class OAuthController {
         TokenResponse tokenResponse = exchangeCodeForToken(code);
 
         ResponseCookie accessToken = ResponseCookie.from("access_token", tokenResponse.access_token())
-                .httpOnly(true).secure(true).path("/").sameSite("Lax").maxAge(300).build();
+                .httpOnly(true).secure(true).path("/").sameSite("Lax").maxAge(1800).build();
 
         ResponseCookie refreshToken = ResponseCookie.from("refresh_token", tokenResponse.refresh_token())
                 .httpOnly(true).secure(true).path("/").sameSite("Lax").maxAge(30 * 24 * 3600).build();
