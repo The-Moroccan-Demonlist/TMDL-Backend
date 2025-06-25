@@ -28,7 +28,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/public/**").permitAll()
                         .requestMatchers("/oauth/**").permitAll()
                         .requestMatchers("/api/authenticated/**").authenticated()
-                        .requestMatchers("/api/staff/**").hasAuthority("read:authenticated")
+                        .requestMatchers("/api/staff/**").hasAuthority("restricted")
                         .anyRequest().authenticated())
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .addFilterBefore(new JwtFromCookieFilter(), UsernamePasswordAuthenticationFilter.class)
