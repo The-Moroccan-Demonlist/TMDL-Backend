@@ -44,7 +44,7 @@ public class PlatformerRecord {
 
     @ManyToOne
     @OnDelete(action = OnDeleteAction.CASCADE)
-    @JsonIncludeProperties({"id", "username"})
+    @JsonIncludeProperties({"id", "name"})
     private PlatformerLevel level;
 
     private Duration recordTime;
