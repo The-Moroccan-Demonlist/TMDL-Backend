@@ -18,6 +18,7 @@ import org.springframework.web.multipart.MultipartFile;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import ma.apostorial.tmdl_backend.player.dtos.PlayerProfileResponse;
+import ma.apostorial.tmdl_backend.player.dtos.PlayerShortResponse;
 import ma.apostorial.tmdl_backend.player.dtos.PlayerUpdateRequest;
 import ma.apostorial.tmdl_backend.player.services.interfaces.PlayerService;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -39,7 +40,7 @@ public class AuthenticatedPlayerController {
     }
 
     @GetMapping("/profile")
-    public ResponseEntity<PlayerProfileResponse> getAuthenticatedPlayer(
+    public ResponseEntity<PlayerShortResponse> getAuthenticatedPlayer(
             @AuthenticationPrincipal Jwt jwt) {
         return new ResponseEntity<>(playerService.getAuthenticatedPlayer(jwt), HttpStatus.OK);
     }

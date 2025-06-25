@@ -10,6 +10,7 @@ import org.springframework.web.multipart.MultipartFile;
 import ma.apostorial.tmdl_backend.player.dtos.PlayerPostLoginRequest;
 import ma.apostorial.tmdl_backend.player.dtos.PlayerProfileResponse;
 import ma.apostorial.tmdl_backend.player.dtos.PlayerQueryResponse;
+import ma.apostorial.tmdl_backend.player.dtos.PlayerShortResponse;
 import ma.apostorial.tmdl_backend.player.dtos.PlayerUpdateRequest;
 
 public interface PlayerService {
@@ -19,7 +20,7 @@ public interface PlayerService {
     Page<PlayerQueryResponse> query(String query, int page, int size);
     List<PlayerQueryResponse> findAllByClassicPoints();
     List<PlayerQueryResponse> findAllByPlatformerPoints();
-    PlayerProfileResponse getAuthenticatedPlayer(Jwt jwt);
+    PlayerShortResponse getAuthenticatedPlayer(Jwt jwt);
     PlayerProfileResponse updateAuthenticatedPlayer(PlayerUpdateRequest request, Jwt jwt);
     // List<PlayerQueryResponse> findAllStaff();
     void addRegion(UUID regionId, Jwt jwt);

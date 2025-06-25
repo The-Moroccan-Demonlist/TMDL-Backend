@@ -21,6 +21,7 @@ import ma.apostorial.tmdl_backend.log.services.internal.interfaces.LogInternalSe
 import ma.apostorial.tmdl_backend.player.dtos.PlayerPostLoginRequest;
 import ma.apostorial.tmdl_backend.player.dtos.PlayerProfileResponse;
 import ma.apostorial.tmdl_backend.player.dtos.PlayerQueryResponse;
+import ma.apostorial.tmdl_backend.player.dtos.PlayerShortResponse;
 import ma.apostorial.tmdl_backend.player.dtos.PlayerUpdateRequest;
 import ma.apostorial.tmdl_backend.player.entities.Player;
 import ma.apostorial.tmdl_backend.player.mappers.PlayerMapper;
@@ -96,9 +97,10 @@ public class PlayerServiceImpl implements PlayerService {
     }
 
     @Override
-    public PlayerProfileResponse getAuthenticatedPlayer(Jwt jwt) {
+    public PlayerShortResponse getAuthenticatedPlayer(Jwt jwt) {
         Player player = playerInternalService.getAuthenticatedPlayer(jwt);
-        return playerMapper.fromEntityToProfileResponse(player);
+        List<String> permissions = jwt.getClaimAsStringList("permissions");
+        return playerMapper.fromEntityToShortResponse(player, permissions);
     }
 
     @Override
