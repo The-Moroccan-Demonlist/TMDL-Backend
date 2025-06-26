@@ -25,17 +25,17 @@ import lombok.RequiredArgsConstructor;
 public class SecurityConfig {
 
     @Bean
-public CsrfTokenRepository csrfTokenRepository() {
-    CookieCsrfTokenRepository repository = new CookieCsrfTokenRepository();
-    repository.setCookieCustomizer(cookieBuilder -> cookieBuilder
+    public CsrfTokenRepository csrfTokenRepository() {
+        CookieCsrfTokenRepository repository = new CookieCsrfTokenRepository();
+        repository.setCookieCustomizer(cookieBuilder -> cookieBuilder
                 .secure(true)
                 .httpOnly(true)
                 .sameSite("Lax")
                 .path("/"));
 
-                return repository;
-    
-}
+        return repository;
+
+    }
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -51,10 +51,10 @@ public CsrfTokenRepository csrfTokenRepository() {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .addFilterBefore(new JwtFromCookieFilter(), UsernamePasswordAuthenticationFilter.class)
                 .oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()))
-                 .logout(logout -> logout
-                        .logoutUrl("/oauth/logout") // Match your logout endpoint
-                        .deleteCookies("access_token", "refresh_token", "XSRF-TOKEN") // Explicitly delete these cookies
-                        .logoutSuccessHandler(new HttpStatusReturningLogoutSuccessHandler(HttpStatus.OK)) // Or redirect
+                .logout(logout -> logout
+                        .logoutUrl("/api/public/oauth/logout")
+                        .deleteCookies("access_token", "refresh_token", "XSRF-TOKEN")
+                        .logoutSuccessHandler(new HttpStatusReturningLogoutSuccessHandler(HttpStatus.OK))
                         .permitAll());
 
         return http.build();
