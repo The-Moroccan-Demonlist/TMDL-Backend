@@ -10,8 +10,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -98,18 +100,23 @@ public class OAuthController {
         }
     }
 
-    @GetMapping("/oauth/logout")
-    public void logout(HttpServletResponse response) throws IOException {
+    @PostMapping("/oauth/logout")
+    public ResponseEntity<Void> logout(HttpServletResponse response) throws IOException {
         ResponseCookie accessToken = ResponseCookie.from("access_token", "")
                 .httpOnly(true).secure(true).path("/").maxAge(0).sameSite("Lax").build();
 
         ResponseCookie refreshToken = ResponseCookie.from("refresh_token", "")
                 .httpOnly(true).secure(true).path("/").maxAge(0).sameSite("Lax").build();
 
-        response.addHeader(HttpHeaders.SET_COOKIE, accessToken.toString());
-        response.addHeader(HttpHeaders.SET_COOKIE, refreshToken.toString());
+        ResponseCookie csrfToken = ResponseCookie.from("XSRF-TOKEN", "")
+                .httpOnly(false).secure(true).path("/").maxAge(0).sameSite("None").build();
 
-        response.sendRedirect(nextjsUrl);
+        HttpHeaders headers = new HttpHeaders();
+        headers.add(HttpHeaders.SET_COOKIE, accessToken.toString());
+        headers.add(HttpHeaders.SET_COOKIE, refreshToken.toString());
+        headers.add(HttpHeaders.SET_COOKIE, csrfToken.toString());
+
+        return new ResponseEntity<>(headers, HttpStatus.NO_CONTENT);
     }
 
     @GetMapping("/oauth/refresh-token")
@@ -148,4 +155,8 @@ public class OAuthController {
         return ResponseEntity.ok().headers(headers).body("Refreshed");
     }
 
+    @GetMapping("/csrf")
+    public CsrfToken getCsrf(CsrfToken token) {
+        return token;
+    }
 }
