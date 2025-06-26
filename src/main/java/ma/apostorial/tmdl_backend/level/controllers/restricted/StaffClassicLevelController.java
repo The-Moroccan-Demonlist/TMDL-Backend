@@ -36,7 +36,7 @@ public class StaffClassicLevelController {
     }
 
     @PatchMapping("/{levelId}/move/{ranking}")
-    public ResponseEntity<Void> create(
+    public ResponseEntity<Void> move(
             @PathVariable UUID levelId,
             @PathVariable int ranking,
             @AuthenticationPrincipal Jwt jwt) {
@@ -45,7 +45,7 @@ public class StaffClassicLevelController {
     }
 
     @PatchMapping("/{firstLevelId}/swap/{secondLevelId}")
-    public ResponseEntity<Void> create(
+    public ResponseEntity<Void> swap(
             @PathVariable UUID firstLevelId,
             @PathVariable UUID secondLevelId,
             @AuthenticationPrincipal Jwt jwt) {
