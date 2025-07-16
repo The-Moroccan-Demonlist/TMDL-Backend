@@ -1,13 +1,21 @@
 package ma.apostorial.tmdl_backend.level.services.implementations;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import ma.apostorial.tmdl_backend.region.entities.Region;
+import software.amazon.awssdk.core.sync.RequestBody;
+import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -40,11 +48,20 @@ public class ClassicLevelServiceImpl implements ClassicLevelService {
     private final ClassicLevelRepository classicLevelRepository;
     private final ClassicLevelMapper classicLevelMapper;
     private final LogInternalService logInternalService;
+    private final S3Client s3Client;
+    
+    @Value("${MINIO_LEVEL_BUCKET}")
+    private String bucket;
+
+    @Value("${MINIO_DOMAIN}")
+    private String domain;
 
     @Override
-    public ClassicLevelResponse create(ClassicLevelCreationRequest request, Jwt jwt) {
+    public ClassicLevelResponse create(ClassicLevelCreationRequest request, MultipartFile file, Jwt jwt) {
         ClassicLevel levelToCreate = classicLevelMapper.fromCreationRequestToEntity(request);
         levelToCreate.calculatePoints();
+        String thumbnailLink = uploadThumbnail(file, request.ingameId());
+        levelToCreate.setThumbnailLink(thumbnailLink);
         ClassicLevel savedLevel = classicLevelRepository.save(levelToCreate);
 
         List<ClassicLevel> affectedLevels = classicLevelRepository.findByRankingGreaterThanEqualOrderByRanking(savedLevel.getRanking());
@@ -357,5 +374,29 @@ public class ClassicLevelServiceImpl implements ClassicLevelService {
         affectedLevels.remove(levelToDelete);
         classicLevelRepository.saveAll(affectedLevels);
         logInternalService.create(Type.CLASSIC_LEVEL, jwt, "Deleted classic level [name={}, id={}].", levelToDelete.getName(), levelToDelete.getId());
+    }
+
+    @Override
+    public String uploadThumbnail(MultipartFile file, String levelIngameId) {
+        try {
+            String fileId = levelIngameId.toString();
+
+            Map<String, String> metadata = new HashMap<>();
+            metadata.put("original-filename", file.getOriginalFilename());
+            metadata.put("level", levelIngameId);
+
+            PutObjectRequest putRequest = PutObjectRequest.builder()
+                    .bucket(bucket)
+                    .key(fileId)
+                    .contentType(file.getContentType())
+                    .metadata(metadata)
+                    .build();
+
+            s3Client.putObject(putRequest, RequestBody.fromBytes(file.getBytes()));
+            
+            return String.format(domain + "/%s/%s", bucket, fileId);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to upload avatar", e);
+        }
     }
 }

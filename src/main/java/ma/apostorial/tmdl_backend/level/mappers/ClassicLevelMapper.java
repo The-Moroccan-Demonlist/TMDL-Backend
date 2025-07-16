@@ -16,6 +16,7 @@ public interface ClassicLevelMapper {
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "firstVictor", ignore = true)
+    @Mapping(target = "thumbnailLink", ignore = true)
     @Mapping(target = "points", ignore = true)
     @Mapping(target = "minimumPoints", ignore = true)
     @Mapping(target = "oldPoints", ignore = true)

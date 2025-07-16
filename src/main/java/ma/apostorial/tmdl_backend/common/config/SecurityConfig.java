@@ -25,28 +25,17 @@ import lombok.RequiredArgsConstructor;
 public class SecurityConfig {
 
     @Bean
-    public CsrfTokenRepository csrfTokenRepository() {
-        CookieCsrfTokenRepository repository = new CookieCsrfTokenRepository();
-        repository.setCookieCustomizer(cookieBuilder -> cookieBuilder
-                .secure(true)
-                .httpOnly(true)
-                .sameSite("Lax")
-                .path("/"));
-
-        return repository;
-
-    }
-
-    @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(csrf -> csrf
                         .csrfTokenRepository(csrfTokenRepository()))
                 .authorizeHttpRequests(authz -> authz
                         .requestMatchers("/api/public/**").permitAll()
-                        .requestMatchers("/oauth/**").permitAll()
-                        .requestMatchers("/api/authenticated/**").authenticated()
-                        .requestMatchers("/api/staff/**").hasAuthority("restricted")
+                        .requestMatchers("/api/auth/**").authenticated()
+                        .requestMatchers("/api/staff/**").hasAuthority("staff:all")
+                        .requestMatchers("/api/staff/classic/**").hasAuthority("staff:classic")
+                        .requestMatchers("/api/staff/platformer/**").hasAuthority("staff:platformer")
+                        .requestMatchers("/api/admin/**").hasAuthority("admin:all")
                         .anyRequest().authenticated())
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .addFilterBefore(new JwtFromCookieFilter(), UsernamePasswordAuthenticationFilter.class)
@@ -58,6 +47,19 @@ public class SecurityConfig {
                         .permitAll());
 
         return http.build();
+    }
+
+    @Bean
+    public CsrfTokenRepository csrfTokenRepository() {
+        CookieCsrfTokenRepository repository = new CookieCsrfTokenRepository();
+        repository.setCookieCustomizer(cookieBuilder -> cookieBuilder
+                .secure(true)
+                .httpOnly(true)
+                .sameSite("Lax")
+                .path("/"));
+
+        return repository;
+
     }
 
     @Bean

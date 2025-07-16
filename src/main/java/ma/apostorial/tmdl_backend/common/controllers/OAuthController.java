@@ -126,7 +126,7 @@ public class OAuthController {
         }
 
         WebClient webClient = WebClient.builder()
-                .baseUrl(domain)
+                .baseUrl("https://" + domain)
                 .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_FORM_URLENCODED_VALUE)
                 .build();
 

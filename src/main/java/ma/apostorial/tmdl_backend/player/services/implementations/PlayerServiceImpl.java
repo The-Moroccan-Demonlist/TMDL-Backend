@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
@@ -47,8 +48,9 @@ public class PlayerServiceImpl implements PlayerService {
     private final UsernameGenerator usernameGenerator;
     private final LogInternalService logInternalService;
     private final S3Client s3Client;
-
-    private final String bucket = "avatars";
+    
+    @Value("${MINIO_PLAYER_BUCKET}")
+    private String bucket;
 
     @Override
     public void createIfNotExists(PlayerPostLoginRequest request) {
@@ -174,7 +176,7 @@ public class PlayerServiceImpl implements PlayerService {
     public String uploadAvatar(MultipartFile file, Jwt jwt) {
         try {
             UUID playerId = playerInternalService.getAuthenticatedPlayer(jwt).getId();
-            String fileId = UUID.randomUUID().toString();
+            String fileId = playerId.toString();
 
             Map<String, String> metadata = new HashMap<>();
             metadata.put("original-filename", file.getOriginalFilename());

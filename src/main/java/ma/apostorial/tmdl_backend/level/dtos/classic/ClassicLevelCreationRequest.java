@@ -28,9 +28,9 @@ public record ClassicLevelCreationRequest(
     @NotNull(message = "Video link cannot be empty.")
     @Size(max = 255)
     String videoLink,
-    @NotNull(message = "Thumbnail link cannot be empty.")
-    @Size(max = 255)
-    String thumbnailLink,
+    // @NotNull(message = "Thumbnail link cannot be empty.")
+    // @Size(max = 255)
+    // String thumbnailLink,
     @Min(value = 1, message = "Minimum completion must be at least 1")
     @Max(value = 100, message = "Minimum completion cannot exceed 100")
     int minimumCompletion,
